@@ -1,0 +1,85 @@
+<launch>
+    <!-- initial pose -->
+    <arg name="x" default="0.0"/>
+    <arg name="y" default="0.0"/>
+    <arg name="z" default="0.25"/>
+    <arg name="yaw" default="0.0"/>
+
+    <arg name="robot_namespace" default="/"/>
+    <arg name="add_gripper" default="true"/>
+
+    <!-- Load gripper PID gains BEFORE spawn (following xarm_ros pattern)
+         This is the ONLY file we load before spawn for gripper PID gains -->
+    <rosparam if="$(arg add_gripper)" 
+              file="$(find scout_xarm_complete)/config/pid/gripper_gazebo_ros_control.yaml" 
+              command="load"/>
+
+    <!-- Load robot description: Scout base + box_link + xArm6 + gripper -->
+    <param name="robot_description"
+           command="$(find xacro)/xacro '$(find scout_xarm_complete)/urdf/scout_with_box.xacro'"/>
+
+    <!-- Spawn the robot in Gazebo -->
+    <node name="spawn_scout_with_box_model" pkg="gazebo_ros" type="spawn_model" 
+          args="-x $(arg x)
+                -y $(arg y)
+                -z $(arg z)
+                -Y $(arg yaw)
+                -unpause
+                -urdf
+                -param robot_description
+                -model scout_with_box"
+          respawn="false" output="screen"/>
+
+    <!-- Robot State Publisher
+         NOTE: We use scout_state_controller which publishes to /joint_states (root namespace)
+         The xarm controllers publish to /xarm/joint_states, but scout_state_controller
+         should already include all joints. If there are issues, we may need to merge. -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <!-- Load base controller configurations -->
+    <rosparam file="$(find scout_xarm_complete)/config/controllers/scout_v2_control.yaml" command="load"/>
+
+    <!-- Load arm controller configurations
+         NOTE: We load to root namespace because scout's gazebo_ros_control plugin
+         creates controller_manager in root namespace. The xarm_ros uses namespace "xarm"
+         because their gazebo_ros_control plugin is configured with namespace="xarm". -->
+    <rosparam file="$(find scout_xarm_complete)/config/controllers/xarm6_controllers.yaml" command="load"/>
+
+    <!-- Load gripper controller configurations (AFTER spawn, matching xarm_ros pattern) -->
+    <rosparam if="$(arg add_gripper)" 
+              file="$(find scout_xarm_complete)/config/controllers/gripper_controllers.yaml" 
+              command="load"/>
+
+    <!-- Spawn base controllers (scout controllers stay in root namespace) -->
+    <node name="scout_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" 
+          args="scout_state_controller scout_motor_fr_controller scout_motor_fl_controller scout_motor_rl_controller scout_motor_rr_controller"/>
+
+    <!-- Spawn arm controller + joint_state_controller
+         NOTE: Spawning to root namespace because scout's controller_manager is in root.
+         xarm_ros spawns to /xarm namespace because their gazebo_ros_control plugin uses namespace="xarm".
+         We can't change scout's namespace without breaking scout controllers, so we use root.
+         However, we still spawn joint_state_controller like they do (but note: scout_state_controller
+         already publishes all joints, so this might be redundant, but follows their pattern) -->
+    <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" 
+          args="xarm6_traj_controller"/>
+
+    <!-- Spawn gripper controller (to root namespace, matching our controller_manager location) -->
+    <node if="$(arg add_gripper)" name="gripper_controller_spawner" 
+          pkg="controller_manager" type="spawner" respawn="false" output="screen" 
+          args="gripper_traj_controller"/>
+
+    <!-- Initialize arm to home position after controllers spawn
+         This ensures consistent starting position across launches -->
+    <node name="xarm6_init_home" pkg="scout_xarm_complete" type="xarm6_init_home.py" 
+          output="screen" respawn="false">
+        <remap from="/xarm6_traj_controller/command" to="/xarm6_traj_controller/command"/>
+    </node>
+
+    <!-- REMOVED: gripper_init_position script - they don't use any initialization!
+         Their gripper controller works without any initial commands. The controller
+         should default to holding current position when no command is received. -->
+
+    <!-- NOTE: Scout skid steer controller and ground truth publisher are not included
+         in this consolidated package. They are part of scout_gazebo_sim package.
+         If needed, copy those C++ nodes from scout_gazebo_sim/src/ to this package. -->
+</launch>

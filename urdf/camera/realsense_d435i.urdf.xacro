@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Modified to attach to existing link_eef instead of defining it -->
+  <xacro:macro name="d435i_urdf_attach" params="prefix:='' attach_to:='link_eef' add_d435i_links:=false xyz:='0 0 0' rpy:='0 0 0'">
+
+    <!-- define property -->
+    <xacro:property name="M_PI" value="3.1415926535897931" />
+    
+    <!-- Define mesh_path and mesh_suffix properties needed by common_link macros -->
+    <xacro:property name="mesh_path" value="package://scout_xarm_complete/meshes" scope="parent"/>
+    <xacro:property name="mesh_suffix" value="stl" scope="parent"/>
+    
+    <!-- NOTE: We do NOT define link_eef here - it already exists!
+         We attach camera_link directly to the existing link_eef -->
+
+    <xacro:if value="${add_d435i_links}">
+
+      <link name="${prefix}camera_link">
+        <!-- Visual: camera stand mesh (from xarm_description) -->
+        <!-- Use common_link macros like original xarm_ros -->
+        <xacro:include filename="$(find scout_xarm_complete)/urdf/common/common.link.xacro" />
+        <xacro:common_link_visual 
+          mesh_filename="camera/realsense/visual/d435_with_cam_stand"  
+          origin_xyz="0 0 0" 
+          origin_rpy="0 0 0"
+          material_name="Silver" />
+        <!-- Collision disabled to avoid interference with gripper -->
+        <!-- Camera is lightweight and collision not critical for simulation -->
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <box size="0.02 0.02 0.02"/>
+          </geometry>
+        </collision>
+        <inertial>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <mass value="0.05"/>
+          <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+        </inertial>
+      </link>
+
+      <link name="${prefix}camera_depth_frame"></link>
+
+      <link name="${prefix}camera_depth_optical_frame"></link>
+
+      <link name="${prefix}camera_color_frame"></link>
+
+      <link name="${prefix}camera_color_optical_frame"></link>
+
+      <link name="${prefix}camera_left_ir_frame"></link>
+
+      <link name="${prefix}camera_left_ir_optical_frame"></link>
+
+      <link name="${prefix}camera_right_ir_frame"></link>
+
+      <link name="${prefix}camera_right_ir_optical_frame"></link>
+
+      <!-- Camera link attaches to existing link_eef (not defining it) -->
+      <!-- xyz/rpy parameters allow mounting on top of link_eef -->
+      <joint name="${prefix}camera_link_joint" type="fixed">
+        <parent link="${attach_to}" />
+        <child link="${prefix}camera_link" />
+        <!-- Mount camera on top of link_eef: z offset upward, adjust rpy as needed -->
+        <origin xyz="${xyz}" rpy="${rpy}" />
+      </joint>
+
+      <joint name="${prefix}camera_depth_joint" type="fixed">
+        <parent link="${prefix}camera_link" />
+        <child link="${prefix}camera_depth_frame" />
+        <origin xyz="0.06746 -0.0175 0.0237" rpy="${M_PI} ${-M_PI/2} 0" />
+      </joint>
+
+      <joint name="${prefix}camera_depth_optical_joint" type="fixed">
+        <parent link="${prefix}camera_depth_frame" />
+        <child link="${prefix}camera_depth_optical_frame" />
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      </joint>
+
+      <joint name="${prefix}camera_color_joint" type="fixed">
+        <parent link="${prefix}camera_link" />
+        <child link="${prefix}camera_color_frame" />
+        <origin xyz="0.06746 -0.0025 0.0237" rpy="${M_PI} ${-M_PI/2} 0" />
+      </joint>
+
+      <joint name="${prefix}camera_color_optical_joint" type="fixed">
+        <parent link="${prefix}camera_color_frame" />
+        <child link="${prefix}camera_color_optical_frame" />
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      </joint>
+
+      <joint name="${prefix}camera_left_ir_joint" type="fixed">
+        <parent link="${prefix}camera_link" />
+        <child link="${prefix}camera_left_ir_frame" />
+        <origin xyz="0.06746 -0.0175 0.0237" rpy="${M_PI} ${-M_PI/2} 0" />
+      </joint>
+
+      <joint name="${prefix}camera_left_ir_optical_joint" type="fixed">
+        <parent link="${prefix}camera_left_ir_frame" />
+        <child link="${prefix}camera_left_ir_optical_frame" />
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      </joint>
+
+      <joint name="${prefix}camera_right_ir_joint" type="fixed">
+        <parent link="${prefix}camera_link" />
+        <child link="${prefix}camera_right_ir_frame" />
+        <origin xyz="0.06746 -0.0675 0.0237" rpy="${M_PI} ${-M_PI/2} 0" />
+      </joint>
+
+      <joint name="${prefix}camera_right_ir_optical_joint" type="fixed">
+        <parent link="${prefix}camera_right_ir_frame" />
+        <child link="${prefix}camera_right_ir_optical_frame" />
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      </joint>
+    </xacro:if>
+
+  </xacro:macro>
+</robot>
+

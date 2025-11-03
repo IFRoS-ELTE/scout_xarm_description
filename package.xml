@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>scout_xarm_complete</name>
+  <version>1.0.0</version>
+  <description>Complete consolidated package for Scout + xArm6 + Gripper + Camera Gazebo simulation. Contains all URDF, meshes, configs, launch files, and scripts needed.</description>
+
+  <maintainer email="user@example.com">User</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Core ROS dependencies -->
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>control_msgs</depend>
+
+  <!-- Robot description -->
+  <depend>xacro</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
+
+  <!-- Gazebo dependencies -->
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_ros_control</depend>
+  <depend>gazebo_plugins</depend>
+
+  <!-- Controller dependencies -->
+  <depend>controller_manager</depend>
+  <depend>joint_trajectory_controller</depend>
+  <depend>position_controllers</depend>
+  <depend>velocity_controllers</depend>
+  <depend>effort_controllers</depend>
+
+  <!-- Additional dependencies -->
+  <depend>tf</depend>
+  <depend>tf2_ros</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
+</package>
+

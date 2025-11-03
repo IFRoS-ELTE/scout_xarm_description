@@ -1,0 +1,23 @@
+# Build artifacts
+build/
+devel/
+install/
+log/
+*.pyc
+__pycache__/
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.bak
+*.backup

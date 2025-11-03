@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<!--
+  Consolidated Scout + xArm6 + Gripper + Camera URDF
+  This file includes everything needed for the complete robot system.
+  All paths are relative to scout_xarm_complete package.
+-->
+<robot name="scout_with_box" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Include the Scout base -->
+    <xacro:include filename="$(find scout_xarm_complete)/urdf/scout/scout_v2.xacro" />
+    
+    <!-- Include the box_link definition -->
+    <xacro:include filename="$(find scout_xarm_complete)/urdf/base/scout_xarm_base.xacro" />
+
+    <!-- Connect box_link to base_link -->
+    <joint
+      name="scout_with_box"
+      type="fixed">
+      <origin
+        xyz="0 0 0.113"
+        rpy="0 0 0" />
+      <parent
+        link="base_link" />
+      <child
+        link="box_link" />
+    </joint>
+
+    <!-- RSLidar sensor - same as laser_Link, positioned on box_link -->
+    <link name="rslidar">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.5"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.08" radius="0.05"/>
+        </geometry>
+        <material name="Grey">
+          <color rgba="0.2 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.08" radius="0.05"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- rslidar joint - same position as laser_Link on box_link -->
+    <joint name="box_to_rslidar" type="fixed">
+      <origin xyz="0.37655 2.1023E-05 0.003" rpy="0 0 0"/>
+      <parent link="box_link"/>
+      <child link="rslidar"/>
+    </joint>
+
+    <!-- Gazebo lidar sensor plugin -->
+    <gazebo reference="rslidar">
+      <sensor type="ray" name="rslidar_sensor">
+        <update_rate>10.0</update_rate>
+        <visualize>true</visualize>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>720</samples>
+              <resolution>1</resolution>
+              <min_angle>-2.0933333</min_angle>
+              <max_angle>2.0933333</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.2</min>
+            <max>100.0</max>
+            <resolution>0.01</resolution>
+          </range>
+        </ray>
+        <plugin name="gazebo_ros_rslidar" filename="libgazebo_ros_laser.so">
+          <topicName>/scan</topicName>
+          <frameName>rslidar</frameName>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+    <!-- Arm mount cylinder - fills gap from box_link origin (z=0) to arm_base position (z=0.147) -->
+    <!-- Real robot positions arm_base at z=0.147m from box_link (not at box top z=0.27) -->
+    <link name="arm_mount_cylinder">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.3"/>
+        <inertia ixx="0.00152" ixy="0" ixz="0" iyy="0.00152" iyz="0" izz="0.00008"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.147" radius="0.05"/>
+        </geometry>
+        <material name="Grey">
+          <color rgba="0.3 0.3 0.3 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.147" radius="0.05"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Joint connecting arm mount cylinder to box_link - extends from z=0 to z=0.147 -->
+    <!-- Center of cylinder at z=0.0735 (midpoint between 0 and 0.147) -->
+    <!-- This matches real robot: arm_base at z=0.147m from box_link -->
+    <joint name="box_to_arm_mount_cylinder" type="fixed">
+      <origin xyz="0.212 0 0.0735" rpy="0 0 0"/>
+      <parent link="box_link"/>
+      <child link="arm_mount_cylinder"/>
+    </joint>
+
+    <!-- Include xarm6 robot macro -->
+    <xacro:include filename="$(find scout_xarm_complete)/urdf/xarm6/xarm6_robot_macro.xacro" />
+
+    <!-- Create arm_base link (mounting point for xarm6) -->
+    <link name="arm_base">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.1"/>
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+    </link>
+
+    <!-- Joint connecting arm_base to top of arm_mount_cylinder -->
+    <!-- Top of cylinder is at +0.0735 relative to cylinder center (half height up) -->
+    <!-- This positions arm_base at z=0.147m from box_link, matching real robot -->
+    <joint name="arm_mount_cylinder_to_arm_base" type="fixed">
+      <origin xyz="0 0 0.0735" rpy="0 0 0"/>
+      <parent link="arm_mount_cylinder"/>
+      <child link="arm_base"/>
+    </joint>
+
+    <!-- Include xarm6 robot - attach to arm_base -->
+    <xacro:xarm6_robot 
+      prefix=""
+      namespace=""
+      limited="false"
+      effort_control="false"
+      velocity_control="false"
+      attach_to="arm_base"
+      xyz="0 0 0"
+      rpy="0 0 0"
+      load_gazebo_plugin="false"
+      rs_d435i="false" />
+
+    <!-- Include xarm_gripper model -->
+    <xacro:include filename="$(find scout_xarm_complete)/urdf/gripper/xarm_gripper_model.xacro" />
+
+    <!-- Load gripper and attach to link_eef (end effector of xarm6) -->
+    <xacro:load_gripper 
+      prefix=""
+      attach_to="link_eef"
+      xyz="0 0 0"
+      rpy="0 0 0"
+      effort_control="false"
+      velocity_control="false"
+      ns=""
+      robot_dof="6" />
+
+    <!-- Include RealSense D435i camera (eye-in-hand setup) -->
+    <xacro:include filename="$(find scout_xarm_complete)/urdf/camera/realsense_d435i.urdf.xacro" />
+    <xacro:include filename="$(find scout_xarm_complete)/urdf/camera/realsense.gazebo.xacro" />
+    
+    <!-- Attach camera to link6 (not link_eef, to avoid gripper interference) -->
+    <xacro:d435i_urdf_attach 
+      prefix=""
+      attach_to="link6"
+      add_d435i_links="true"
+      xyz="0 0 0.01"
+      rpy="0 0 0" />
+    
+    <!-- Gazebo plugin for RealSense camera -->
+    <xacro:realsense_gazebo prefix="" />
+
+</robot>
+
