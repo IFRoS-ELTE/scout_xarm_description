@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Scout + xArm6 Robot Simulation](docs/images/output.gif)
+![Scout + xArm6 Robot Simulation](docs/images/image1.png)
 
 **A self-contained ROS package for Gazebo simulation of AgileX Scout mobile base with xArm6 robotic arm, gripper, and RealSense D435i camera.**
 
