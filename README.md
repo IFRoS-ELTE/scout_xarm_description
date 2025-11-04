@@ -2,7 +2,9 @@
 
 <div align="center">
 
-![Scout + xArm6 Robot Simulation](docs/images/image1.png)
+![Scout + xArm6 Simulation Demo](docs/images/output.gif)
+
+*Demonstration of the Scout mobile robot with xArm6 robotic arm, gripper, and RealSense D435i camera. The camera is mounted on link6 above the gripper for eye-in-hand manipulation. The simulation shows the robot's sensor visualizations, including the laser scan field of view and camera capabilities.*
 
 **A self-contained ROS package for Gazebo simulation of AgileX Scout mobile base with xArm6 robotic arm, gripper, and RealSense D435i camera.**
 
@@ -11,14 +13,6 @@
 [![Gazebo](https://img.shields.io/badge/Gazebo-9.0-orange)](http://gazebosim.org/)
 
 </div>
-
-## Simulation Visuals
-
-The GIF below shows the complete robot system in action:
-
-![Scout + xArm6 Simulation Demo](docs/images/output.gif)
-
-*Demonstration of the Scout mobile robot with xArm6 robotic arm, gripper, and RealSense D435i camera. The camera is mounted on link6 above the gripper for eye-in-hand manipulation. The simulation shows the robot's sensor visualizations, including the laser scan field of view and camera capabilities.*
 
 ## What's Included
 
