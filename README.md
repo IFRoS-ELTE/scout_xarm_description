@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Scout + xArm6 Robot](docs/images/scout_xarm_banner.png)
+![Scout + xArm6 Robot Simulation](docs/images/output.gif)
 
 **A self-contained ROS package for Gazebo simulation of AgileX Scout mobile base with xArm6 robotic arm, gripper, and RealSense D435i camera.**
 
@@ -14,14 +14,11 @@
 
 ## Simulation Visuals
 
-![Scout + xArm6 with Camera - View 1](docs/images/scout_xarm_camera_view1.png)
-*Scout mobile robot with xArm6 robotic arm, gripper, and RealSense D435i camera mounted on the end effector. The camera is positioned above the gripper to avoid interference during manipulation. The blue cone shows the camera's field of view.*
+The GIF below shows the complete robot system in action:
 
-![Scout + xArm6 with Camera - View 2](docs/images/scout_xarm_camera_view2.png)
-*Another perspective showing the integrated robot system with sensor visualizations. The robot is configured for eye-in-hand manipulation with the camera mounted on link6 above the gripper.*
+![Scout + xArm6 Simulation Demo](docs/images/output.gif)
 
-![Scout + xArm6 with Camera - View 3](docs/images/scout_xarm_camera_view3.png)
-*The robot interacting with colored blocks in the simulation environment. The laser scan visualization shows the sensor's detection range, and the camera field of view demonstrates the eye-in-hand configuration.*
+*Demonstration of the Scout mobile robot with xArm6 robotic arm, gripper, and RealSense D435i camera. The camera is mounted on link6 above the gripper for eye-in-hand manipulation. The simulation shows the robot's sensor visualizations, including the laser scan field of view and camera capabilities.*
 
 ## What's Included
 
