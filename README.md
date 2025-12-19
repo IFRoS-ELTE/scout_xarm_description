@@ -452,12 +452,13 @@ The package includes autonomous navigation and exploration capabilities for Gaze
 ### Running Navigation in Gazebo
 
 **1. Start Gazebo with robot:**
-ash
+```bash
 roslaunch scout_xarm_complete scout_with_xarm_empty_world.launch
-
+```
 **2. Launch navigation and exploration (in another terminal):**
+```bash
 roslaunch scout_xarm_navigation navigation_exploration_docker.launch
-
+```
 This launches:
 - **SLAM (gmapping)**: Real-time map building from laser scans
 - **Navigation (move_base)**: Path planning with TEB local planner and GlobalPlanner
