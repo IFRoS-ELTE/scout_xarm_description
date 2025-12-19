@@ -445,6 +445,38 @@ Check that meshes are installed correctly:
 ls ~/catkin_ws/devel/share/scout_xarm_complete/meshes/
 ```
 
+## SLAM, Navigation, and Exploration
+
+The package includes autonomous navigation and exploration capabilities for Gazebo simulation using SLAM (gmapping), move_base navigation stack, and explore_lite for autonomous exploration.
+
+### Running Navigation in Gazebo
+
+**1. Start Gazebo with robot:**
+ash
+roslaunch scout_xarm_complete scout_with_xarm_empty_world.launch**2. Launch navigation and exploration (in another terminal):**
+
+roslaunch scout_xarm_navigation navigation_exploration_docker.launchThis launches:
+- **SLAM (gmapping)**: Real-time map building from laser scans
+- **Navigation (move_base)**: Path planning with TEB local planner and GlobalPlanner
+- **Exploration (explore_lite)**: Automatically sends navigation goals to frontiers for autonomous exploration
+
+### How It Works
+
+When exploration is active, `explore_lite` automatically:
+- Detects frontiers (boundaries between known/unknown areas)
+- Selects nearby frontiers as exploration goals
+- Sends goals to `move_base` to navigate to frontiers
+- Repeats until the accessible area is mapped
+
+### Prerequisites
+
+sudo apt-get install -y \
+  ros-melodic-navigation \
+  ros-melodic-gmapping \
+  ros-melodic-teb-local-planner \
+  ros-melodic-explore-lite
+
+
 ## Credits
 
 This package consolidates:
