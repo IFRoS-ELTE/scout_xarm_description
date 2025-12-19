@@ -1,0 +1,43 @@
+# Common costmap parameters - RUN FROM DOCKER
+# Shared settings for global and local costmaps
+
+# Maximum range at which obstacles are considered
+# INCREASED: 6.0→12.0 to better utilize 200m lidar range (was 100m)
+obstacle_range: 12.0
+
+# Maximum range at which to perform ray tracing
+# INCREASED: 6.0→20.0 to better clear free space with 200m lidar range
+raytrace_range: 20.0
+
+# Inflation radius for obstacles in the costmap
+inflation_radius: 0.40
+
+# Cost scaling factor - higher value = faster cost increase near obstacles
+cost_scaling_factor: 5.0
+
+# Scout v2 footprint - 5 point irregular shape with apex at front
+robot_radius: 0.0
+footprint_padding: 0.0
+footprint: [
+    [-0.325, -0.325], # Coordinates of the first point in the footprint
+    [-0.325, 0.325], # Coordinates of the second point in the footprint
+    [0.325, 0.325], # Coordinates of the third point in the footprint
+    [0.46, 0.0], # Coordinates of the fourth point in the footprint
+    [0.325, -0.325], # Coordinates of the fifth point in the footprint
+  ]
+
+# List of observation sources used for updating the costmap
+observation_sources: base_scan
+
+# Configuration for the base_scan observation source
+base_scan: {
+    sensor_frame: base_link,
+    data_type: LaserScan,
+    topic: /scan,
+    marking: true,
+    clearing: true,
+    min_obstacle_height: -0.25,
+    max_obstacle_height: 0.5,
+    expected_update_rate: 0.0
+  }
+

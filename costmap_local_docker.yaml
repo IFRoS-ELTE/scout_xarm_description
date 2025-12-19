@@ -1,0 +1,56 @@
+# Configuration for the local costmap - RUN FROM DOCKER
+# Higher update rates since we have CPU headroom on external PC
+local_costmap:
+  global_frame: odom
+  robot_base_frame: base_link
+
+  # Reduced update frequency for performance
+  update_frequency: 0.2  # REDUCED: 0.5→0.2 Hz (5s per update) for better performance
+  publish_frequency: 0.2  # REDUCED: 0.5→0.2 Hz to match update rate
+  
+  # Transform tolerance for network latency between Docker and robot
+  transform_tolerance: 2.0  # INCREASED: 0.5→2.0s to handle network latency and TF timing
+
+  static_map: false
+  rolling_window: true
+  width: 6.0
+  height: 6.0
+  resolution: 0.05
+
+  # INCREASED: 6.0→12.0/20.0 to better utilize 200m lidar range (was 100m)
+  obstacle_range: 12.0
+  raytrace_range: 20.0
+
+  # Scout v2 footprint - 5 point irregular shape
+  robot_radius: 0.0
+  footprint_padding: 0.0
+  footprint: [
+      [-0.325, -0.325], # Coordinates of the first point in the footprint
+      [-0.325, 0.325], # Coordinates of the second point in the footprint
+      [0.325, 0.325], # Coordinates of the third point in the footprint
+      [0.46, 0.0], # Coordinates of the fourth point in the footprint
+      [0.325, -0.325], # Coordinates of the fifth point in the footprint
+    ]
+
+  plugins:
+    - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+
+  obstacle_layer:
+    observation_sources: base_scan
+    base_scan:
+      data_type: LaserScan
+      topic: /scan
+      sensor_frame: base_link
+      marking: true
+      clearing: true
+      min_obstacle_height: -0.25
+      max_obstacle_height: 0.5
+      expected_update_rate: 0.0
+    track_unknown_space: false
+
+  inflation_layer:
+    # Reduced inflation radius for more feasible paths
+    inflation_radius: 0.40
+    cost_scaling_factor: 5.0
+

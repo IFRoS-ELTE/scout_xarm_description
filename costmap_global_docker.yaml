@@ -1,0 +1,55 @@
+# Configuration for the global costmap - RUN FROM DOCKER
+# Higher update rates since we have CPU headroom on external PC
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_link
+
+  # Map source and sizing
+  static_map: true
+  rolling_window: false
+  width: 60.0
+  height: 60.0
+  resolution: 0.05
+  origin_x: -30.0
+  origin_y: -30.0
+
+  # Reduced update frequency for large maps (1984x1984 is huge!)
+  update_frequency: 0.1  # REDUCED: 0.5→0.1 Hz (10s per update) to handle large map size
+  publish_frequency: 0.1  # REDUCED: 0.5→0.1 Hz to match update rate
+  
+  # Transform tolerance for network latency between Docker and robot
+  transform_tolerance: 2.0  # INCREASED: 0.5→2.0s to handle network latency and TF timing
+  
+  always_send_full_costmap: true
+
+  # Scout v2 footprint - 5 point irregular shape
+  robot_radius: 0.0
+  footprint_padding: 0.0
+  footprint: [
+      [-0.325, -0.325], # Coordinates of the first point in the footprint
+      [-0.325, 0.325], # Coordinates of the second point in the footprint
+      [0.325, 0.325], # Coordinates of the third point in the footprint
+      [0.46, 0.0], # Coordinates of the fourth point in the footprint
+      [0.325, -0.325], # Coordinates of the fifth point in the footprint
+    ]
+
+  plugins:
+    - {name: static_layer,   type: "costmap_2d::StaticLayer"}
+    - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+
+  static_layer:
+    map_topic: /map
+    subscribe_to_updates: true
+
+  obstacle_layer:
+    track_unknown_space: true
+    # INCREASED: 6.0→12.0/20.0 to better utilize 200m lidar range (was 100m)
+    obstacle_range: 12.0
+    raytrace_range: 20.0
+
+  inflation_layer:
+    # Reduced inflation for more feasible paths while maintaining safety
+    inflation_radius: 0.40
+    cost_scaling_factor: 3.0  # REDUCED: 5.0→3.0, lower cost scaling makes paths more feasible
+

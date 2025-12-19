@@ -1,0 +1,110 @@
+TebLocalPlannerROS:
+  # Topics and frames - REAL ROBOT via Docker
+  odom_topic: odom
+  map_frame: map
+
+  # Trajectory rollout - OPTIMIZED for SMOOTH slow motion
+  teb_autosize: true
+  dt_ref: 0.5                                # CHANGED: longer timestep for smoother trajectories at low speed
+  dt_hysteresis: 0.15                        # INCREASED for more stable timing at low speeds                         
+  max_samples: 500
+  global_plan_overwrite_orientation: false   # DISABLED: Prevents constant rotation, allows smooth forward motion
+  allow_init_with_backwards_motion: false    
+  max_global_plan_lookahead_dist: 3.0        # INCREASED: longer lookahead for smoother motion
+  global_plan_viapoint_sep: 0.5              # INCREASED: fewer viapoints for smoother following
+  global_plan_prune_distance: 1.0
+  exact_arc_length: false
+  feasibility_check_no_poses: 2              
+  publish_feedback: false
+
+  # Differential-drive limits - VERY SLOW for smooth precise motion
+  max_vel_x: 0.1                             # Set to 0.1 m/s for slow smooth motion
+  max_vel_x_backwards: 0.02                  # CHANGED: must be > penalty_epsilon (0.01)
+  max_vel_theta: 0.2                         # INCREASED: 0.05 was too slow, causing endless rotation
+  acc_lim_x: 0.05                            # REDUCED to 0.05 for ultra-smooth acceleration
+  acc_lim_theta: 0.05                        # REDUCED to 0.05 for ultra-smooth rotation
+  min_turning_radius: 0.0
+  wheelbase: 0.0
+  cmd_angle_instead_rotvel: false
+
+  footprint_model:
+    type: "polygon"
+    # Scout v2 footprint - 5 point irregular shape
+    vertices:
+       - [-0.325, -0.325]  # Coordinates of the first point in the footprint
+       - [-0.325, 0.325]   # Coordinates of the second point in the footprint
+       - [0.325, 0.325]    # Coordinates of the third point in the footprint
+       - [0.46, 0.0]       # Coordinates of the fourth point in the footprint
+       - [0.325, -0.325]   # Coordinates of the fifth point in the footprint
+
+  # Goal tolerance - STRICT to prevent premature goal reached
+  xy_goal_tolerance: 0.15                    # REDUCED: 0.30→0.15, stricter to prevent premature stopping
+  yaw_goal_tolerance: 0.2                    # REDUCED: 0.40→0.2, stricter angle tolerance
+  free_goal_vel: false
+  complete_global_plan: true
+
+  # Costmap obstacle interpretation - matching costmap inflation
+  min_obstacle_dist: 0.15
+  inflation_dist: 0.40                       # Matching costmap inflation_radius (reduced from 0.55)
+  include_costmap_obstacles: true
+  include_dynamic_obstacles: false
+  costmap_obstacles_behind_robot_dist: 1.0
+  obstacle_poses_affected: 15
+  dynamic_obstacle_inflation_dist: 0.50
+  costmap_converter_plugin: ""
+  costmap_converter_spin_thread: true
+  costmap_converter_rate: 5.0
+
+  # Optimization weights - FAST and PERMISSIVE
+  no_inner_iterations: 3                     # CHANGED: 5→3, faster optimization
+  no_outer_iterations: 3                     # CHANGED: 4→3, faster optimization
+  optimization_activate: true
+  optimization_verbose: false
+  penalty_epsilon: 0.01                      # CHANGED: 0.1→0.01 to support very low velocities (0.05-0.1)
+  obstacle_cost_exponent: 4.0
+  weight_max_vel_x: 0.5                      # REDUCED for ultra-smooth velocity profiles at low speed
+  weight_max_vel_theta: 0.3                  # REDUCED for ultra-smooth rotation
+  weight_acc_lim_x: 0.3                      # REDUCED for ultra-smooth acceleration changes
+  weight_acc_lim_theta: 0.3                  # REDUCED for ultra-smooth angular acceleration changes
+  weight_kinematics_nh: 1000.0
+  weight_kinematics_forward_drive: 500.0     # INCREASED: strongly prefer forward motion over rotation
+  weight_kinematics_turning_radius: 1.0
+  weight_optimaltime: 1.0                    # CHANGED: reduced from 5.0 for more accurate following
+  weight_shortest_path: 0.0
+  weight_obstacle: 50.0                      
+  weight_inflation: 0.2
+  weight_viapoint: 2.0                       # REDUCED: was too high (10.0), causing over-correction and jerky motion
+  weight_dynamic_obstacle: 10.0
+  weight_dynamic_obstacle_inflation: 0.2
+  weight_adapt_factor: 2.0
+
+  # Homotopy class planner - can enable since we have CPU
+  enable_homotopy_class_planning: false
+  enable_multithreading: true
+  max_number_classes: 4
+  selection_cost_hysteresis: 1.0
+  selection_prefer_initial_plan: 0.9
+  selection_obst_cost_scale: 100.0
+  selection_alternative_time_cost: false
+  roadmap_graph_no_samples: 15
+  roadmap_graph_area_width: 5.0
+  roadmap_graph_area_length_scale: 1.0
+  h_signature_prescaler: 0.5
+  h_signature_threshold: 0.1
+  obstacle_heading_threshold: 0.45
+  switching_blocking_period: 0.0
+  viapoints_all_candidates: true
+  delete_detours_backwards: true
+  max_ratio_detours_duration_best_duration: 3.0
+  visualize_hc_graph: false
+  visualize_with_time_as_z_axis_scale: false
+
+  # Recovery behavior parameters
+  shrink_horizon_backup: true
+  shrink_horizon_min_duration: 10.0
+  oscillation_recovery: false                # CHANGED: true→false to prevent non-stop rotation
+  oscillation_v_eps: 0.1                     # KEPT
+  oscillation_omega_eps: 0.1                 # KEPT
+  oscillation_recovery_min_duration: 10.0
+  oscillation_filter_duration: 10.0
+
