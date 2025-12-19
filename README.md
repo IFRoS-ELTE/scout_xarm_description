@@ -473,12 +473,13 @@ When exploration is active, `explore_lite` automatically:
 
 ### Prerequisites
 
+```bash
 sudo apt-get install -y \
   ros-melodic-navigation \
   ros-melodic-gmapping \
   ros-melodic-teb-local-planner \
   ros-melodic-explore-lite
-
+```
 
 ## Credits
 
