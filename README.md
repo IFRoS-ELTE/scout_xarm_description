@@ -331,11 +331,21 @@ scout_xarm_complete/
 ├── launch/                # Launch files
 │   ├── scout_with_xarm_empty_world.launch  # Main launch file
 │   └── spawn_scout_with_box.launch        # Spawn robot
+├── scout_xarm_navigation/ # Navigation and SLAM module
+│   ├── config/           # Navigation configurations
+│   │   ├── costmap_common_docker.yaml
+│   │   ├── costmap_global_docker.yaml
+│   │   ├── costmap_local_docker.yaml
+│   │   └── teb_local_planner_docker.yaml
+│   └── launch/           # Navigation launch files
+│       └── navigation_exploration_docker.launch
 ├── scripts/               # Python scripts
 │   ├── xarm6_keyboard_teleop.py    # Arm teleoperation
 │   ├── xarm6_init_home.py          # Initialize arm position
 │   └── gripper_init_position.py    # Initialize gripper
-└── worlds/                # Gazebo world files
+├── worlds/                # Gazebo world files
+└── docs/                  # Documentation and media
+    └── images/           # Demo images and videos
 ```
 
 ## Usage
@@ -498,6 +508,7 @@ MIT License - See LICENSE file for details
 
 Feel free to star this repository if you find it useful, or fork it to customize for your own projects. Contributions, issues, and pull requests are welcome!
 
-## Contributor
+## Contributors
+**Solomon Chibuzo Nwafor** ([@solonso](https://github.com/solonso))
+**Rihab Laroussi** ([@RihabLar](https://github.com/RihabLar))
 
-Solomon Chibuzo Nwafor
