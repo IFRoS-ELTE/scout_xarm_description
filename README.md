@@ -510,5 +510,6 @@ Feel free to star this repository if you find it useful, or fork it to customize
 
 ## Contributors
 **Solomon Chibuzo Nwafor** ([@solonso](https://github.com/solonso))
+
 **Rihab Laroussi** ([@RihabLar](https://github.com/RihabLar))
 
