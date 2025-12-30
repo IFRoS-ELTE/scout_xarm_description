@@ -455,6 +455,7 @@ Check that meshes are installed correctly:
 ls ~/catkin_ws/devel/share/scout_xarm_complete/meshes/
 ```
 
+
 # Gazebo - SLAM, Navigation, and Exploration
 
 The package includes autonomous navigation and exploration capabilities for Gazebo simulation using SLAM (gmapping), move_base navigation stack, and explore_lite for autonomous exploration.
@@ -496,7 +497,9 @@ sudo apt-get install -y \
 
 The following videos show the complete navigatiom process in gazebo simulation + rviz:
 
+
 https://github.com/user-attachments/assets/fde495d2-2963-42a4-8ee6-9e3832a06094
+
 ![rviz](https://github.com/user-attachments/assets/d3e176c1-5e16-4069-bbe1-79b26b34ddd6)
 
 
