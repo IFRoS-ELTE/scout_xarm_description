@@ -1,0 +1,42 @@
+<launch>
+    <!-- move_base configuration mirroring agilex_scout_xarm setup -->
+    <node pkg="move_base" type="move_base" name="move_base" output="screen" respawn="false">
+        <!-- Global / local planners -->
+        <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+        <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+
+        <!-- Planner/controller behavior -->
+        <param name="controller_frequency" value="10.0"/>
+        <param name="planner_frequency" value="0.0"/>
+        <param name="planner_patience" value="5.0"/>
+        <param name="controller_patience" value="15.0"/>
+        <param name="conservative_reset_dist" value="3.0"/>
+        <param name="recovery_behavior_enabled" value="true"/>
+        <param name="clearing_rotation_allowed" value="true"/>
+        <param name="shutdown_costmaps" value="false"/>
+        <param name="transform_tolerance" value="2.0"/>
+
+        <!-- Global planner parameters -->
+        <rosparam>
+            GlobalPlanner:
+                allow_unknown: true
+                use_dijkstra: true
+                use_quadratic: true
+                use_grid_path: false
+                old_navfn_behavior: false
+                cost_factor: 3.0
+                neutral_cost: 50
+                lethal_cost: 253
+                default_tolerance: 0.1
+        </rosparam>
+
+        <!-- Costmaps & TEB config -->
+        <rosparam file="$(find scout_xarm_navigation)/config/costmap_common.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find scout_xarm_navigation)/config/costmap_global.yaml" command="load" />
+        <rosparam file="$(find scout_xarm_navigation)/config/costmap_local.yaml" command="load" />
+        <rosparam file="$(find scout_xarm_navigation)/config/teb_local_planner.yaml" command="load" />
+
+        <remap from="cmd_vel" to="/cmd_vel"/>
+        <remap from="odom" to="/odom"/>
+    </node>
+</launch>
