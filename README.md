@@ -1,4 +1,4 @@
-# Scout + xArm6 Complete Package
+#  Gazebo - Scout + xArm6 Complete Package
 
 <div align="center">
 
