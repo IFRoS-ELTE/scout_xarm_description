@@ -552,19 +552,48 @@ During exploration, the robot:
 
 ## System Overview
 
-```
-Laser Scan → gmapping → /map
-                ↓
-          Global Costmap
-                ↓
-       GlobalPlanner (path)
-                ↓
-      TEB Local Planner
-                ↓
-             /cmd_vel
-                ↑
-         explore_lite goals
-```
+The following diagram illustrates the end-to-end autonomous navigation pipeline used in this project, including SLAM, global planning, local planning, and frontier-based exploration.
+
+graph TD
+    Start([START]) --> Sensors[Sensor Inputs]
+
+    Sensors --> Lidar[LiDAR /scan]
+    Sensors --> Odom[Odometry /odom]
+
+    Lidar --> Gmapping[SLAM: gmapping]
+    Odom --> Gmapping
+
+    Gmapping --> Map[/map (Occupancy Grid)]
+
+    Map --> GlobalCostmap[Global Costmap]
+    GlobalCostmap --> GlobalPlanner[GlobalPlanner]
+
+    GlobalPlanner --> GlobalPath[Global Path]
+
+    GlobalPath --> LocalPlanner[TEB Local Planner]
+    Odom --> LocalPlanner
+    LocalCostmap[Local Costmap] --> LocalPlanner
+
+    LocalPlanner --> CmdVel[/cmd_vel]
+    CmdVel --> Robot[Scout Base Motion]
+
+    Robot --> Sensors
+
+    %% Exploration loop
+    Map --> ExploreLite[explore_lite]
+    ExploreLite --> Frontier[Detect Frontiers]
+    Frontier --> SelectGoal[Select Frontier Goal]
+    SelectGoal --> MoveBaseGoal[/move_base goal]
+    MoveBaseGoal --> GlobalPlanner
+
+    %% Styling
+    style Start fill:#90EE90,stroke:#2d5016,stroke-width:2px,color:#000
+    style Robot fill:#E6FFF0,stroke:#009966,stroke-width:2px,color:#000
+    style Gmapping fill:#FFF9E6,stroke:#CC9900,stroke-width:2px,color:#000
+    style GlobalPlanner fill:#E6F3FF,stroke:#0066CC,stroke-width:2px,color:#000
+    style LocalPlanner fill:#F0E6FF,stroke:#6B46C1,stroke-width:2px,color:#000
+    style ExploreLite fill:#FFE6E6,stroke:#CC3333,stroke-width:2px,color:#000
+
 
 ## Prerequisites
 
