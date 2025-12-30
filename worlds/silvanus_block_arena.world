@@ -141,61 +141,6 @@
       </link>
     </model>
 
-    <!-- Pathway strips -->
-    <model name="north_south_path">
-      <static>1</static>
-      <pose>0 0 0.05 0 0 0</pose>
-      <link name="link">
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>6 40 0.1</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/Pavement</name>
-            </script>
-          </material>
-        </visual>
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>6 40 0.1</size>
-            </box>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <model name="east_west_path">
-      <static>1</static>
-      <pose>0 0 0.051 0 0 1.5707</pose>
-      <link name="link">
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>6 36 0.1</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/Pavement</name>
-            </script>
-          </material>
-        </visual>
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>6 36 0.1</size>
-            </box>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
     <!-- Block obstacles -->
     <model name="block_cluster_north">
       <static>1</static>
@@ -504,36 +449,6 @@
       </link>
     </model>
 
-    <!-- Keep origin clear for spawn -->
-    <model name="origin_marker">
-      <static>1</static>
-      <pose>0 0 0.02 0 0 0</pose>
-      <link name="link">
-        <visual name="visual">
-          <geometry>
-            <cylinder>
-              <radius>0.4</radius>
-              <length>0.04</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/Black</name>
-            </script>
-          </material>
-        </visual>
-        <collision name="collision">
-          <geometry>
-            <cylinder>
-              <radius>0.4</radius>
-              <length>0.04</length>
-            </cylinder>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
     <state world_name="silvanus_block_arena">
       <sim_time>0 0</sim_time>
       <real_time>0 0</real_time>
@@ -542,3 +457,4 @@
     </state>
   </world>
 </sdf>
+
