@@ -1,5 +1,4 @@
 # Configuration for the global costmap - RUN FROM DOCKER
-# Higher update rates since we have CPU headroom on external PC
 global_costmap:
   global_frame: map
   robot_base_frame: base_link
@@ -14,15 +13,15 @@ global_costmap:
   origin_y: -30.0
 
   # Reduced update frequency for large maps (1984x1984 is huge!)
-  update_frequency: 0.1  # REDUCED: 0.5→0.1 Hz (10s per update) to handle large map size
-  publish_frequency: 0.1  # REDUCED: 0.5→0.1 Hz to match update rate
+  update_frequency: 0.1  
+  publish_frequency: 0.1  
   
   # Transform tolerance for network latency between Docker and robot
-  transform_tolerance: 2.0  # INCREASED: 0.5→2.0s to handle network latency and TF timing
+  transform_tolerance: 2.0  
   
   always_send_full_costmap: true
 
-  # Scout v2 footprint - 5 point irregular shape
+  # Scout v2 footprint
   robot_radius: 0.0
   footprint_padding: 0.0
   footprint: [
@@ -44,12 +43,11 @@ global_costmap:
 
   obstacle_layer:
     track_unknown_space: true
-    # INCREASED: 6.0→12.0/20.0 to better utilize 200m lidar range (was 100m)
     obstacle_range: 12.0
     raytrace_range: 20.0
 
   inflation_layer:
     # Reduced inflation for more feasible paths while maintaining safety
     inflation_radius: 0.40
-    cost_scaling_factor: 3.0  # REDUCED: 5.0→3.0, lower cost scaling makes paths more feasible
+    cost_scaling_factor: 3.0 
 
