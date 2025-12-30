@@ -554,6 +554,8 @@ During exploration, the robot:
 
 The following diagram illustrates the end-to-end autonomous navigation pipeline used in this project, including SLAM, global planning, local planning, and frontier-based exploration.
 
+```mermaid
+
 graph TD
     Start([START]) --> Sensors[Sensor Inputs]
 
@@ -593,7 +595,7 @@ graph TD
     style GlobalPlanner fill:#E6F3FF,stroke:#0066CC,stroke-width:2px,color:#000
     style LocalPlanner fill:#F0E6FF,stroke:#6B46C1,stroke-width:2px,color:#000
     style ExploreLite fill:#FFE6E6,stroke:#CC3333,stroke-width:2px,color:#000
-
+```
 
 ## Prerequisites
 
