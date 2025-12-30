@@ -555,7 +555,6 @@ During exploration, the robot:
 The following diagram illustrates the end-to-end autonomous navigation pipeline used in this project, including SLAM, global planning, local planning, and frontier-based exploration.
 
 ```mermaid
-
 graph TD
     Start([START]) --> Sensors[Sensor Inputs]
 
@@ -586,10 +585,7 @@ graph TD
     Frontier --> SelectGoal["Select Frontier Goal"]
     SelectGoal --> MoveBaseGoal["Send goal to move_base"]
     MoveBaseGoal --> GlobalPlanner
-
-
-...
-
+```
 
 ## Prerequisites
 
@@ -601,7 +597,6 @@ sudo apt-get install -y \
   ros-melodic-explore-lite
 ```
 
----
 
 <div align="center">
   <h3>Navigation Demonstration</h3>
