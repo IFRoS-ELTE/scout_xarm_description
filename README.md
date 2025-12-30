@@ -497,10 +497,22 @@ sudo apt-get install -y \
 
 The following videos show the complete navigatiom process in gazebo simulation + rviz:
 
+<div align="center">
+  <h3>Navigation Demonstration</h3>
+  <table>
+    <tr>
+      <td align="center" width="50%">
+        <img src="gazebo.gif" alt="Gazebo Simulation" width="100%"/>
+        <br><strong>Gazebo Simulation</strong>
+      </td>
+      <td align="center" width="50%">
+        <img src="rviz.gif" alt="RViz Visualization" width="100%"/>
+        <br><strong>RViz Visualization</strong>
+      </td>
+    </tr>
+  </table>
+</div>
 
-https://github.com/user-attachments/assets/fde495d2-2963-42a4-8ee6-9e3832a06094
-
-![rviz](https://github.com/user-attachments/assets/d3e176c1-5e16-4069-bbe1-79b26b34ddd6)
 
 
 ## Credits
