@@ -559,43 +559,37 @@ The following diagram illustrates the end-to-end autonomous navigation pipeline 
 graph TD
     Start([START]) --> Sensors[Sensor Inputs]
 
-    Sensors --> Lidar[LiDAR /scan]
-    Sensors --> Odom[Odometry /odom]
+    Sensors --> Lidar["LiDAR topic: /scan"]
+    Sensors --> Odom["Odometry topic: /odom"]
 
-    Lidar --> Gmapping[SLAM: gmapping]
+    Lidar --> Gmapping["SLAM: gmapping"]
     Odom --> Gmapping
 
-    Gmapping --> Map[/map (Occupancy Grid)]
+    Gmapping --> Map["Map topic: /map (Occupancy Grid)"]
 
-    Map --> GlobalCostmap[Global Costmap]
-    GlobalCostmap --> GlobalPlanner[GlobalPlanner]
+    Map --> GlobalCostmap["Global Costmap (map frame)"]
+    GlobalCostmap --> GlobalPlanner["GlobalPlanner"]
+    GlobalPlanner --> GlobalPath["Global Path"]
 
-    GlobalPlanner --> GlobalPath[Global Path]
-
-    GlobalPath --> LocalPlanner[TEB Local Planner]
+    GlobalPath --> LocalPlanner["TEB Local Planner"]
     Odom --> LocalPlanner
-    LocalCostmap[Local Costmap] --> LocalPlanner
+    LocalCostmap["Local Costmap (odom frame)"] --> LocalPlanner
 
-    LocalPlanner --> CmdVel[/cmd_vel]
-    CmdVel --> Robot[Scout Base Motion]
+    LocalPlanner --> CmdVel["Command: /cmd_vel"]
+    CmdVel --> Robot["Scout Base Motion"]
 
     Robot --> Sensors
 
     %% Exploration loop
-    Map --> ExploreLite[explore_lite]
-    ExploreLite --> Frontier[Detect Frontiers]
-    Frontier --> SelectGoal[Select Frontier Goal]
-    SelectGoal --> MoveBaseGoal[/move_base goal]
+    Map --> ExploreLite["explore_lite"]
+    ExploreLite --> Frontier["Detect Frontiers"]
+    Frontier --> SelectGoal["Select Frontier Goal"]
+    SelectGoal --> MoveBaseGoal["Send goal to move_base"]
     MoveBaseGoal --> GlobalPlanner
 
-    %% Styling
-    style Start fill:#90EE90,stroke:#2d5016,stroke-width:2px,color:#000
-    style Robot fill:#E6FFF0,stroke:#009966,stroke-width:2px,color:#000
-    style Gmapping fill:#FFF9E6,stroke:#CC9900,stroke-width:2px,color:#000
-    style GlobalPlanner fill:#E6F3FF,stroke:#0066CC,stroke-width:2px,color:#000
-    style LocalPlanner fill:#F0E6FF,stroke:#6B46C1,stroke-width:2px,color:#000
-    style ExploreLite fill:#FFE6E6,stroke:#CC3333,stroke-width:2px,color:#000
-```
+
+...
+
 
 ## Prerequisites
 
