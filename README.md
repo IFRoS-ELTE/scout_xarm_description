@@ -493,10 +493,6 @@ sudo apt-get install -y \
   ros-melodic-explore-lite
 ```
 
-### System Demonstration 
-
-The following videos show the complete navigatiom process in gazebo simulation + rviz:
-
 <div align="center">
   <h3>Navigation Demonstration</h3>
   <table>
