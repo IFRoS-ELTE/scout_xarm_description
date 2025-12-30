@@ -2,11 +2,9 @@
 # Shared settings for global and local costmaps
 
 # Maximum range at which obstacles are considered
-# INCREASED: 6.0→12.0 to better utilize 200m lidar range (was 100m)
 obstacle_range: 12.0
 
 # Maximum range at which to perform ray tracing
-# INCREASED: 6.0→20.0 to better clear free space with 200m lidar range
 raytrace_range: 20.0
 
 # Inflation radius for obstacles in the costmap
@@ -15,7 +13,7 @@ inflation_radius: 0.40
 # Cost scaling factor - higher value = faster cost increase near obstacles
 cost_scaling_factor: 5.0
 
-# Scout v2 footprint - 5 point irregular shape with apex at front
+# Scout v2 footprint
 robot_radius: 0.0
 footprint_padding: 0.0
 footprint: [
