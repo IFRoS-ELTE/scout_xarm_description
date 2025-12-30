@@ -17,7 +17,7 @@
        (or use your preferred Gazebo world)
     
     2. In another terminal (inside Docker), run this launch file:
-       roslaunch scout_xarm_navigation navigation_exploration_docker.launch
+       roslaunch scout_xarm_navigation nav_explore.launch
     
     Prerequisites:
     - Gazebo must be running with the robot spawned
@@ -26,155 +26,27 @@
     - Robot must subscribe to /cmd_vel for base control
   -->
 
-  <!-- Arguments -->
-  <arg name="use_rviz" default="true"/>
-  <arg name="fixed_frame" default="map"/>
-  
-  <!-- CRITICAL: Enable sim time for Gazebo simulation -->
-  <param name="/use_sim_time" value="true"/>
-  
-  <!-- SLAM: gmapping -->
-  <!-- With external PC we have more CPU, so use better quality settings -->
-  <node pkg="gmapping" type="slam_gmapping" name="gmapping" output="screen" launch-prefix="bash -c 'sleep 2; $0 $@'">
-    <!-- TF frames: Standard ROS navigation frames - map->odom->base_link -->
-    <param name="base_frame" value="base_link"/>
-    <param name="odom_frame" value="odom"/>
-    <param name="map_frame" value="map"/>
-    
-    <!-- Lidar scan topic (from Gazebo simulation or pointcloud_to_laserscan) -->
-    <remap from="scan" to="/scan"/>
-    
-    <!-- Map update thresholds: responsive updates since we have CPU headroom -->
-    <param name="linearUpdate" value="0.2"/>
-    <param name="angularUpdate" value="0.2"/>
-    
-    <!-- Publish map->odom transform frequently for smooth TF -->
-    <param name="transform_publish_period" value="0.05"/>
-    
-    <!-- TF tolerance for simulation -->
-    <param name="tf_delay" value="0.05"/>
-    
-    <!-- Map size & resolution -->
-    <param name="xmin" value="-50.0"/>
-    <param name="ymin" value="-50.0"/>
-    <param name="xmax" value="50.0"/>
-    <param name="ymax" value="50.0"/>
-    <param name="delta" value="0.05"/>
-    
-    <!-- Laser range limit -->
-    <param name="maxUrange" value="20.0"/>
-    <param name="maxRange" value="25.0"/>
-    
-    <!-- Motion model (Scout base) -->
-    <param name="srr" value="0.1"/>
-    <param name="srt" value="0.2"/>
-    <param name="str" value="0.1"/>
-    <param name="stt" value="0.2"/>
-    
-    <!-- Map params: higher quality since we have CPU -->
-    <param name="map_update_interval" value="2.0"/>
-    <param name="resol" value="0.05"/>
-    <param name="particles" value="30"/>
-    <param name="sigma" value="0.05"/>
-    <param name="kernelSize" value="1"/>
-    <param name="lstep" value="0.05"/>
-    <param name="astep" value="0.05"/>
-    <param name="iterations" value="5"/>
-    <param name="lsigma" value="0.075"/>
-    <param name="ogain" value="3.0"/>
-    <!-- Process every scan since we have CPU headroom -->
-    <param name="throttle_scans" value="1"/>
-    <param name="lskip" value="0"/>
-    <param name="minimumScore" value="50"/>
-    <param name="llsamplerange" value="0.01"/>
-    <param name="llsamplestep" value="0.01"/>
-    <param name="lasamplerange" value="0.005"/>
-    <param name="lasamplestep" value="0.005"/>
-  </node>
+  <launch>
+    <arg name="run_explore" default="true"/>
 
-  <!-- Navigation: move_base -->
-  <node pkg="move_base" type="move_base" name="move_base" output="screen" launch-prefix="bash -c 'sleep 5; $0 $@'">
-    <!-- Global planner: GlobalPlanner with allow_unknown for exploration -->
-    <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
-    
-    <!-- Local planner: TEB for differential drive -->
-    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
-    
-    <!-- Move_base behavior parameters -->
-    <!-- Higher controller frequency since we have CPU headroom - smoother motion -->
-    <param name="controller_frequency" value="20.0"/>
-    <!-- Disable periodic replanning: only replan on new goal, goal reached, or recovery -->
-    <param name="planner_frequency" value="0.0"/>
-    <param name="planner_patience" value="5.0"/>
-    <param name="controller_patience" value="15.0"/>
-    <param name="conservative_reset_dist" value="3.0"/>
-    <!-- Re-enable recovery behaviors for better planning recovery -->
-    <param name="recovery_behavior_enabled" value="true"/>
-    <param name="clearing_rotation_allowed" value="false"/>
-    <param name="shutdown_costmaps" value="false"/>
-    
-    <!-- GlobalPlanner configuration - MORE PERMISSIVE for exploration -->
-    <rosparam>
-      GlobalPlanner:
-        allow_unknown: true
-        use_dijkstra: true
-        use_quadratic: false  # CHANGED: false→true, simpler quadratic might be more reliable
-        use_grid_path: true   # CHANGED: false→true, use grid path for more reliable planning
-        old_navfn_behavior: false
-        cost_factor: 0.5      # REDUCED: 1.0→0.5, even more permissive to allow paths through higher cost
-        neutral_cost: 50
-        lethal_cost: 253
-        default_tolerance: 1.5  # INCREASED: 1.0→1.5, even more forgiving goal tolerance
-    </rosparam>
-    
-    <!-- Costmap configs optimized for Gazebo simulation -->
-    <!-- EXPLICITLY set footprint parameters FIRST to ensure they're loaded before costmap initialization -->
-    <rosparam>
-      global_costmap:
-        robot_radius: 0.0
-        footprint_padding: 0.0
-        footprint: [[-0.325, -0.325], [-0.325, 0.325], [0.325, 0.325], [0.46, 0.0], [0.325, -0.325]]
-      local_costmap:
-        robot_radius: 0.0
-        footprint_padding: 0.0
-        footprint: [[-0.325, -0.325], [-0.325, 0.325], [0.325, 0.325], [0.46, 0.0], [0.325, -0.325]]
-    </rosparam>
-    <rosparam file="$(find scout_xarm_navigation)/config/costmap_common_docker.yaml" command="load" ns="global_costmap"/>
-    <rosparam file="$(find scout_xarm_navigation)/config/costmap_global_docker.yaml" command="load"/>
-    <rosparam file="$(find scout_xarm_navigation)/config/costmap_local_docker.yaml" command="load"/>
-    
-    <!-- TebLocalPlanner config optimized for Gazebo simulation -->
-    <rosparam file="$(find scout_xarm_navigation)/config/teb_local_planner_docker.yaml" command="load"/>
+    <include file="$(find scout_xarm_navigation)/launch/slam_gmapping.launch"/>
+    <include file="$(find scout_xarm_navigation)/launch/move_base.launch"/>
 
-    <!-- Remap topics to Gazebo simulation topics -->
-    <remap from="cmd_vel" to="/cmd_vel"/>
-    <remap from="odom" to="/odom"/>
-  </node>
-
-  <!-- Exploration: explore_lite -->
-  <node pkg="explore_lite" type="explore" name="explore" output="screen" launch-prefix="bash -c 'sleep 8; $0 $@'">
-    <param name="robot_base_frame" value="base_link"/>
-    <param name="costmap_topic" value="map"/>
-    <param name="costmap_updates_topic" value="map_updates"/>
-    <param name="visualize" value="true"/>
-    
-    <!-- Exploration tuning parameters - RECYCLING ROBOT - STRONGLY PREFER NEARBY FRONTIERS -->
-    <param name="planner_frequency" value="0.2"/>      <!-- Check every 5s for new nearby frontiers -->
-    <param name="progress_timeout" value="20.0"/>       <!-- Faster timeout to try nearby frontiers sooner -->
-    
-    <!-- Frontier selection - STRONGLY PREFER NEARBY FRONTIERS -->
-    <param name="potential_scale" value="10.0"/>       <!-- INCREASED: 5.0→10.0, VERY STRONGLY prefer nearby frontiers -->
-    <param name="orientation_scale" value="0.5"/>      <!-- REDUCED: 1.0→0.5, less preference for front, more for distance -->
-    <param name="gain_scale" value="0.3"/>              <!-- REDUCED: 0.5→0.3, strongly avoid large distant frontiers -->
-    
-    <!-- Transform and frontier filtering - PREFER NEARBY -->
-    <param name="transform_tolerance" value="0.5"/>
-    <param name="min_frontier_size" value="0.3"/>      <!-- Explore small areas too -->
-  </node>
-
-  <!-- RViz for monitoring -->
-  <node if="$(arg use_rviz)" name="rviz" pkg="rviz" type="rviz" 
-    args="-d $(find scout_xarm_navigation)/rviz/scout_xarm_bringup.rviz"/>
-
+    <node if="$(arg run_explore)" pkg="explore_lite" type="explore" respawn="false" name="explore" output="screen">
+        <param name="robot_base_frame" value="base_link"/>
+        <param name="costmap_topic" value="/map"/>
+        <param name="costmap_updates_topic" value="/map_updates"/>
+        <param name="visualize" value="true"/>
+        <param name="planner_frequency" value="0.05"/>
+        <param name="progress_timeout" value="120.0"/>
+        <param name="potential_scale" value="3.0"/>
+        <param name="orientation_scale" value="0.0"/>
+        <param name="gain_scale" value="1.0"/>
+        <param name="transform_tolerance" value="0.3"/>
+        <param name="min_frontier_size" value="0.75"/>
+    </node>
+    <arg name="run_rviz" default="true"/>
+    <node if="$(arg run_rviz)" pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen"
+         args="-d $(find scout_xarm_navigation)/rviz.rviz"/>
 </launch>
 
