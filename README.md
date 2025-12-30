@@ -1,4 +1,6 @@
+---
 #  Gazebo - Scout + xArm6 Complete Package
+---
 
 <div align="center">
 
@@ -455,9 +457,6 @@ Check that meshes are installed correctly:
 ls ~/catkin_ws/devel/share/scout_xarm_complete/meshes/
 ```
 
-
-Absolutely 👍
-Below is a **ready-to-copy README section**, clean Markdown, no explanations outside the text.
 
 ---
 
