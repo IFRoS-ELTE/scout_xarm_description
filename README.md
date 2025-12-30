@@ -456,34 +456,127 @@ ls ~/catkin_ws/devel/share/scout_xarm_complete/meshes/
 ```
 
 
-# Gazebo - SLAM, Navigation, and Exploration
+Absolutely 👍
+Below is a **ready-to-copy README section**, clean Markdown, no explanations outside the text.
 
-The package includes autonomous navigation and exploration capabilities for Gazebo simulation using SLAM (gmapping), move_base navigation stack, and explore_lite for autonomous exploration.
+---
 
-### Running Navigation in Gazebo
+# Gazebo – SLAM, Navigation, and Autonomous Exploration
 
-**1. Start Gazebo with robot:**
+This package implements a complete **autonomous navigation pipeline** in Gazebo simulation using **SLAM (gmapping)**, the ROS **move_base navigation stack**, and **explore_lite** for frontier-based exploration. The system is configured for an **AgileX Scout v2 mobile base with xArm6** and mirrors a real-robot navigation setup.
+
+---
+
+## Running Navigation in Gazebo
+
+### 1. Start Gazebo with the robot
+
 ```bash
 roslaunch scout_xarm_complete scout_with_xarm_empty_world.launch
 ```
-**2. Launch navigation and exploration (in another terminal):**
+
+### 2. Launch SLAM, navigation, and exploration
+
 ```bash
 roslaunch scout_xarm_navigation nav_explore.launch
 ```
-This launches:
-- **SLAM (gmapping)**: Real-time map building from laser scans
-- **Navigation (move_base)**: Path planning with TEB local planner and GlobalPlanner
-- **Exploration (explore_lite)**: Automatically sends navigation goals to frontiers for autonomous exploration
 
-### How It Works
+This launch file starts:
 
-When exploration is active, `explore_lite` automatically:
-- Detects frontiers (boundaries between known/unknown areas)
-- Selects nearby frontiers as exploration goals
-- Sends goals to `move_base` to navigate to frontiers
-- Repeats until the accessible area is mapped
+* **SLAM (gmapping)** for online map building
+* **Navigation (move_base)** with GlobalPlanner and TEB local planner
+* **Exploration (explore_lite)** for autonomous frontier-based exploration
 
-### Prerequisites
+---
+
+## SLAM (gmapping)
+
+* Builds a **2D occupancy grid map** in real time from laser scans (`/scan`)
+* Uses `odom → base_link` for motion estimation
+* Continuously updates and publishes the map on `/map`
+* Large map bounds are configured to support extended exploration in simulation
+
+---
+
+## Navigation Stack
+
+Navigation is handled by `move_base` with:
+
+### Global Planner
+
+* Uses **GlobalPlanner** on the SLAM-generated map
+* Plans long-range paths in the `map` frame
+
+### Local Planner (TEB)
+
+* Uses **TEB Local Planner** for time-optimal, collision-free trajectories
+* Enforces **non-holonomic constraints** for differential drive motion
+* Forward-only driving (no reverse motion)
+* Polygon footprint matching the Scout base geometry
+* Obstacle avoidance using a rolling local costmap with laser input
+
+---
+
+## Costmaps
+
+Two costmaps are used:
+
+### Global Costmap
+
+* Fixed in the `map` frame
+* Uses the SLAM map for global planning
+* Includes static, obstacle, and inflation layers
+
+### Local Costmap
+
+* Rolling window in the `odom` frame
+* Used for real-time obstacle avoidance
+* Updated from laser scans
+* Inflated obstacles to maintain safe clearance
+
+Both costmaps share:
+
+* The same robot footprint
+* Laser-based obstacle marking and clearing
+
+---
+
+## Autonomous Exploration (explore_lite)
+
+Autonomous exploration is implemented using **explore_lite**:
+
+* Detects **frontiers** (boundaries between known and unknown areas)
+* Selects reachable frontiers as navigation goals
+* Sends goals to `move_base`
+* Repeats until the accessible environment is fully explored
+
+During exploration, the robot:
+
+* Continuously expands the SLAM map
+* Navigates autonomously without manual goal input
+* Avoids obstacles while exploring unknown space
+
+---
+
+## System Overview
+
+```
+Laser Scan → gmapping → /map
+                ↓
+          Global Costmap
+                ↓
+       GlobalPlanner (path)
+                ↓
+      TEB Local Planner
+                ↓
+             /cmd_vel
+                ↑
+         explore_lite goals
+```
+
+---
+
+## Prerequisites
 
 ```bash
 sudo apt-get install -y \
@@ -492,6 +585,8 @@ sudo apt-get install -y \
   ros-melodic-teb-local-planner \
   ros-melodic-explore-lite
 ```
+
+---
 
 <div align="center">
   <h3>Navigation Demonstration</h3>
