@@ -463,7 +463,6 @@ ls ~/catkin_ws/devel/share/scout_xarm_complete/meshes/
 
 This package implements a complete **autonomous navigation pipeline** in Gazebo simulation using **SLAM (gmapping)**, the ROS **move_base navigation stack**, and **explore_lite** for frontier-based exploration. The system is configured for an **AgileX Scout v2 mobile base with xArm6** and mirrors a real-robot navigation setup.
 
----
 
 ## Running Navigation in Gazebo
 
@@ -485,7 +484,6 @@ This launch file starts:
 * **Navigation (move_base)** with GlobalPlanner and TEB local planner
 * **Exploration (explore_lite)** for autonomous frontier-based exploration
 
----
 
 ## SLAM (gmapping)
 
@@ -494,7 +492,6 @@ This launch file starts:
 * Continuously updates and publishes the map on `/map`
 * Large map bounds are configured to support extended exploration in simulation
 
----
 
 ## Navigation Stack
 
@@ -513,7 +510,6 @@ Navigation is handled by `move_base` with:
 * Polygon footprint matching the Scout base geometry
 * Obstacle avoidance using a rolling local costmap with laser input
 
----
 
 ## Costmaps
 
@@ -537,7 +533,6 @@ Both costmaps share:
 * The same robot footprint
 * Laser-based obstacle marking and clearing
 
----
 
 ## Autonomous Exploration (explore_lite)
 
@@ -554,7 +549,6 @@ During exploration, the robot:
 * Navigates autonomously without manual goal input
 * Avoids obstacles while exploring unknown space
 
----
 
 ## System Overview
 
@@ -571,8 +565,6 @@ Laser Scan → gmapping → /map
                 ↑
          explore_lite goals
 ```
-
----
 
 ## Prerequisites
 
